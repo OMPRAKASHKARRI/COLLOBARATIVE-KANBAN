@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --canvas: 238 241 241;      /* mineral grey */
+  --surface: 255 255 255;
+  --sunken: 229 234 234;
+  --line: 214 221 222;
+  --ink: 20 38 46;            /* deep teal-ink */
+  --mute: 98 117 124;
+  --brand: 15 92 99;          /* teal */
+  --brand-soft: 215 235 236;
+  --brand-ink: 255 255 255;
+  --signal: 233 168 37;       /* marigold: urgency & the live indicator */
+  --danger: 191 58 52;
+  --danger-soft: 250 232 230;
+  --ok: 38 125 84;
+  --ok-soft: 224 242 232;
+}
+
+@layer base {
+  html, body, #root { height: 100%; }
+  body { @apply bg-canvas text-ink font-sans antialiased; font-feature-settings: 'ss01'; }
+  h1, h2, h3 { @apply font-display tracking-tight; }
+  :focus-visible { outline: 2px solid rgb(var(--brand)); outline-offset: 2px; border-radius: 6px; }
+  ::selection { background: rgb(var(--signal) / .35); }
+}
+
+@layer components {
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed select-none; }
+  .btn-primary { @apply btn bg-brand text-brand-ink hover:bg-brand/90; }
+  .btn-ghost { @apply btn text-ink hover:bg-sunken; }
+  .btn-outline { @apply btn border border-line bg-surface text-ink hover:bg-sunken; }
+  .btn-danger { @apply btn bg-danger text-white hover:bg-danger/90; }
+  .btn-icon { @apply inline-flex h-9 w-9 items-center justify-center rounded-lg text-ink hover:bg-sunken disabled:opacity-40 disabled:cursor-not-allowed; }
+  .field { @apply w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-mute/70 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20 disabled:bg-sunken; }
+  .label { @apply mb-1 block text-xs font-semibold text-mute; }
+  .chip { @apply inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-semibold; }
+  .skeleton { @apply animate-pulse rounded-md bg-sunken; }
+}
+
+/* the single animated moment: the live indicator breathes while connected */
+@keyframes breathe { 0%,100% { box-shadow: 0 0 0 0 rgb(var(--signal) / .55); } 50% { box-shadow: 0 0 0 5px rgb(var(--signal) / 0); } }
+.live-dot { animation: breathe 2.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .live-dot, .animate-slidein, .animate-pop, .animate-pulse { animation: none !important; } }
+
+.scroll-thin::-webkit-scrollbar { height: 10px; width: 10px; }
+.scroll-thin::-webkit-scrollbar-thumb { background: rgb(var(--line)); border-radius: 8px; border: 2px solid rgb(var(--canvas)); }

@@ -1,0 +1,86 @@
+erDiagram
+    ORGANIZATIONS ||--o{ TENANTS : "has branches"
+    ORGANIZATIONS ||--o{ MEMBERSHIPS : "scopes"
+    TENANTS ||--o{ MEMBERSHIPS : "optional (NULL = org-level)"
+    USERS ||--o{ MEMBERSHIPS : "holds"
+    TENANTS ||--o{ BOARDS : "owns"
+    BOARDS ||--o{ COLUMNS : "has"
+    BOARDS ||--o{ TASKS : "has"
+    COLUMNS ||--o{ TASKS : "contains"
+    USERS ||--o{ TASKS : "assigned_to / created_by"
+    TENANTS ||--o{ ACTIVITY_LOGS : "records"
+    USERS ||--o{ ACTIVITY_LOGS : "performed"
+
+    ORGANIZATIONS {
+        uuid id PK
+        varchar name
+        timestamp created_at
+        timestamp updated_at
+    }
+    TENANTS {
+        uuid id PK
+        uuid organization_id FK "UNIQUE(id, organization_id)"
+        varchar name "UNIQUE(organization_id, name)"
+        timestamp created_at
+        timestamp updated_at
+    }
+    USERS {
+        uuid id PK
+        varchar name
+        varchar email UK
+        text password_hash "bcrypt"
+        int token_version "session revocation"
+        timestamp created_at
+    }
+    MEMBERSHIPS {
+        uuid id PK
+        uuid user_id FK
+        uuid organization_id FK
+        uuid tenant_id FK "NULL = org-level; FK (tenant_id, organization_id)"
+        enum role "ORG_ADMIN | TENANT_ADMIN | MEMBER"
+        timestamp created_at
+    }
+    BOARDS {
+        uuid id PK
+        uuid organization_id FK "FK (tenant_id, organization_id)"
+        uuid tenant_id FK "UNIQUE(id, tenant_id)"
+        varchar name
+        text description
+        uuid created_by
+        timestamp created_at
+        timestamp updated_at
+    }
+    COLUMNS {
+        uuid id PK
+        uuid board_id FK "FK (board_id, tenant_id)"
+        uuid tenant_id FK "UNIQUE(id, board_id), UNIQUE(id, tenant_id)"
+        varchar name
+        int position "column order"
+        timestamp created_at
+    }
+    TASKS {
+        uuid id PK
+        uuid tenant_id FK "FK (board_id, tenant_id)"
+        uuid board_id FK
+        uuid column_id FK "FK (column_id, board_id)"
+        varchar title
+        text description
+        uuid assigned_to FK
+        uuid created_by FK
+        enum priority "LOW | MEDIUM | HIGH | URGENT"
+        timestamp due_date
+        int position "dense 0..n-1 per column"
+        int version "optimistic lock"
+        timestamp created_at
+        timestamp updated_at
+    }
+    ACTIVITY_LOGS {
+        uuid id PK
+        uuid tenant_id FK
+        uuid user_id FK
+        varchar entity_type
+        uuid entity_id
+        varchar action
+        jsonb details
+        timestamp created_at
+    }

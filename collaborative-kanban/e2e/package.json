@@ -1,0 +1,8 @@
+{
+  "name": "kanban-e2e",
+  "private": true,
+  "type": "module",
+  "description": "Two-browser end-to-end check (headless Chromium via puppeteer-core). Needs backend :5000 and frontend :5173 running on a freshly seeded DB.",
+  "scripts": { "test": "node e2e.mjs" },
+  "dependencies": { "@sparticuz/chromium": "^153.0.0", "puppeteer-core": "^25.16.0" }
+}
